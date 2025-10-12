@@ -1,18 +1,15 @@
 import Phaser from "phaser";
 import { IntroScene } from "./scenes/IntroScene";
-import { ProphecyScene } from "./scenes/ProphecyScene";
 import { ForestScene } from "./scenes/ForestScene";
-import { CryptScene } from "./scenes/CryptScene";
-import { RitualScene } from "./scenes/RitualScene";
+import { StartScene } from "./scenes/StartScene";
+import { FinishScene } from "./scenes/FinishScene";
 
 export class WitchingHourGame {
   private game: Phaser.Game | null = null;
   private sceneOrder: string[] = [
     "IntroScene",
-    "ProphecyScene",
     "ForestScene",
-    "CryptScene",
-    "RitualScene",
+    "FinishScene",
   ];
 
   constructor(containerId: string) {
@@ -20,7 +17,7 @@ export class WitchingHourGame {
       type: Phaser.AUTO,
       parent: containerId,
       backgroundColor: "#1a1a2e",
-      scene: [IntroScene, ProphecyScene, ForestScene, CryptScene, RitualScene],
+      scene: [StartScene, IntroScene, ForestScene, FinishScene],
       physics: {
         default: "arcade",
         arcade: {
@@ -29,18 +26,12 @@ export class WitchingHourGame {
         },
       },
       scale: {
-        mode: Phaser.Scale.RESIZE, // 🔑 always match window/container size
+        mode: Phaser.Scale.RESIZE,
         autoCenter: Phaser.Scale.CENTER_BOTH,
       },
     };
 
     this.game = new Phaser.Game(config);
-
-    // Check for saved game state and resume if exists
-    const savedState = WitchingHourGame.loadState();
-    if (savedState) {
-      this.game.scene.start(savedState.scene, { timeLeft: savedState.timeLeft });
-    }
   }
 
   destroy() {
@@ -54,48 +45,20 @@ export class WitchingHourGame {
     return this.game;
   }
 
-  static saveState(sceneKey: string, timeLeft: number) {
-    const state = { scene: sceneKey, timeLeft };
-    localStorage.setItem('witchingHourGameState', JSON.stringify(state));
-  }
-
-  static loadState(): { scene: string; timeLeft: number } | null {
-    const stateStr = localStorage.getItem('witchingHourGameState');
-    if (stateStr) {
-      try {
-        return JSON.parse(stateStr);
-      } catch (e) {
-        console.error('Failed to parse saved game state:', e);
-        WitchingHourGame.clearState();
-      }
-    }
-    return null;
-  }
-
-  static clearState() {
-    localStorage.removeItem('witchingHourGameState');
-  }
-
-  // Navigation helpers
-  nextScene(currentSceneKey: string, timeLeft?: number) {
+  // Navigation helpers with time tracking
+  nextScene(currentSceneKey: string, timeLeft?: number, startTime?: number, completionTime?: number) {
     const currentIndex = this.sceneOrder.indexOf(currentSceneKey);
     if (currentIndex >= 0 && currentIndex < this.sceneOrder.length - 1) {
       const nextSceneKey = this.sceneOrder[currentIndex + 1];
-      if (timeLeft !== undefined) {
-        WitchingHourGame.saveState(nextSceneKey, timeLeft);
-      }
-      this.game?.scene.start(nextSceneKey, timeLeft !== undefined ? { timeLeft } : undefined);
+      this.game?.scene.start(nextSceneKey, { timeLeft, startTime, completionTime });
     }
   }
 
-  prevScene(currentSceneKey: string, timeLeft?: number) {
+  prevScene(currentSceneKey: string, timeLeft?: number, startTime?: number) {
     const currentIndex = this.sceneOrder.indexOf(currentSceneKey);
     if (currentIndex > 0) {
       const prevSceneKey = this.sceneOrder[currentIndex - 1];
-      if (timeLeft !== undefined) {
-        WitchingHourGame.saveState(prevSceneKey, timeLeft);
-      }
-      this.game?.scene.start(prevSceneKey, timeLeft !== undefined ? { timeLeft } : undefined);
+      this.game?.scene.start(prevSceneKey, { timeLeft, startTime });
     }
   }
 
