@@ -1,6 +1,5 @@
 import Phaser from "phaser";
 import forestBg from "../../assets/forest_bg.png";
-import pumpkinImg from "../../assets/pumpkin.png"; // small pumpkin PNG
 
 export class StartScene extends Phaser.Scene {
   constructor() {
@@ -9,101 +8,100 @@ export class StartScene extends Phaser.Scene {
 
   preload() {
     this.load.image("bg_forest", forestBg);
-    this.load.image("pumpkin", pumpkinImg); // preload pumpkin
   }
 
   create() {
     const { width, height } = this.scale;
 
-    // Background
+    // === BACKGROUND ===
     this.add
       .image(width / 2, height / 2, "bg_forest")
       .setDisplaySize(width, height)
-      .setTint(0x222222) // dark overlay for haunted effect
-      .setDepth(0);
+      .setTint(0x555555);
 
-    // Title container
-    const titleContainer = this.add.container(width / 2, height * 0.32);
-
-    const titleText = this.add
-      .text(0, 0, "HAUNTED QUEST", {
-        fontSize: "100px",
-        fontFamily: "Henny Penny, Arial",
-        fontStyle: "italic",
-        color: "#8A784E",
+    // === ROUND TITLE ===
+    const roundTitle = this.add
+      .text(width / 2, height * 0.15, "ROUND 1: THE CRYPT OF RIDDLES", {
+        fontSize: "48px",
+        fontFamily: '"Press Start 2P", monospace', // Added quotes and better fallback
+        color: "#F8D47E",
         stroke: "#000000",
-        strokeThickness: 6,
+        strokeThickness: 4,
         align: "center",
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setDepth(3)
+      .setAlpha(0);
 
-    const pumpkin = this.add
-      .image(titleText.width / 2 + 150, 0, "pumpkin")
-      .setScale(0.07)
-      .setOrigin(0.5);
+    this.tweens.add({
+      targets: roundTitle,
+      alpha: 1,
+      duration: 1000,
+      ease: "Power2",
+    });
 
-    titleContainer.add([titleText, pumpkin]);
+    // === STORY TEXT ===
+    const story = [
+      "A terminal flickers alive:",
+      ">>> ERROR: SIGIL OF SYNTAX CORRUPTED",
+      ">>> SOLVE OR BE SEALED FOREVER",
+    ];
 
-    // Tagline
-    this.add
-      .text(
-        width / 2,
-        height * 0.5,
-        "Solve the puzzles... escape the mansion",
-        {
-          fontSize: "44px",
-          fontFamily: "Henny Penny, Arial",
-          color: "#ffffff",
-          stroke: "#000000",
-          strokeThickness: 2,
-          letterSpacing: 1,
-        }
-      )
-      .setOrigin(0.5);
-
-    // Play button
-    const playContainer = this.add
-      .container(width / 2, height * 0.65)
-      .setDepth(2);
-    const btnBg = this.add
-      .rectangle(0, 0, 300, 70, 0x4b0000)
-      .setStrokeStyle(3, 0x000000)
-      .setInteractive({ useHandCursor: true });
-    const btnText = this.add
-      .text(0, 0, "PLAY NOW", {
-        fontSize: "36px",
-        fontFamily: "Pixelify Sans, Arial",
-        color: "#DCD7C9",
-        stroke: "#000000",
-        strokeThickness: 2,
-        letterSpacing: 4,
+    const storyText = this.add
+      .text(width / 2, height * 0.45, "", {
+        fontSize: "26px",
+        fontFamily: "Courier Prime, monospace",
+        color: "#E5E5E5",
+        align: "center",
+        wordWrap: { width: width * 0.8 },
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setDepth(3);
 
-    playContainer.add([btnBg, btnText]);
+    // === Typewriter Effect ===
+    let lineIndex = 0;
+    this.time.addEvent({
+      delay: 90,
+      loop: true,
+      callback: () => {
+        if (lineIndex < story.length) {
+          storyText.setText(story.slice(0, lineIndex + 1).join("\n"));
+          lineIndex++;
+        }
+      },
+    });
 
-    // Button hover effects
-    btnBg.on("pointerover", () => btnBg.setScale(1.03));
-    btnBg.on("pointerout", () => btnBg.setScale(1));
+    // === CONTINUE PROMPT ===
+    const continueText = this.add
+      .text(width / 2, height * 0.9, "[ Press ENTER to Continue ]", {
+        fontSize: "22px",
+        fontFamily: "Pixelify Sans, Arial",
+        color: "#B2B2B2",
+      })
+      .setOrigin(0.5)
+      .setAlpha(0)
+      .setDepth(4);
 
-    // Start next scene on click (timer starts in IntroScene)
-    btnBg.on("pointerup", () => {
+    // Fade in the continue prompt after story finishes
+    this.time.delayedCall(story.length * 100 + 1000, () => {
       this.tweens.add({
-        targets: playContainer,
-        scaleX: 0.98,
-        scaleY: 0.98,
-        duration: 80,
+        targets: continueText,
+        alpha: 1,
+        duration: 800,
         yoyo: true,
+        repeat: -1,
       });
-      this.scene.start("IntroScene");
     });
 
-    // ENTER key shortcut
-    this.input.keyboard?.on("keydown-ENTER", () => {
-      this.scene.start("IntroScene");
+    // === Go to next scene when ENTER pressed ===
+    this.input.keyboard.on("keydown-ENTER", () => {
+      this.cameras.main.fadeOut(800, 0, 0, 0);
+      this.time.delayedCall(800, () => {
+        this.scene.start("IntroScene"); // change to your next scene key
+      });
     });
 
-    // Fade in
-    this.cameras.main.fadeIn(700, 0, 0, 0);
+    // === FADE IN CAMERA ===
+    this.cameras.main.fadeIn(1000, 0, 0, 0);
   }
 }
