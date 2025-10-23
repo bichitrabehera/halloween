@@ -1,9 +1,9 @@
 import Phaser from "phaser";
 import forestBg from "../../assets/forest_bg.png";
 
-export class StartScene extends Phaser.Scene {
+export class Prologue extends Phaser.Scene {
   constructor() {
-    super({ key: "StartScene" });
+    super({ key: "Prologue" });
   }
 
   preload() {
@@ -21,7 +21,7 @@ export class StartScene extends Phaser.Scene {
 
     // === ROUND TITLE ===
     const roundTitle = this.add
-      .text(width / 2, height * 0.15, "ROUND 1: THE CRYPT OF RIDDLES", {
+      .text(width / 2, height * 0.1, "Prologue: Echoes from the Kernel", {
         fontSize: "30px",
         fontFamily: '"Press Start 2P", monospace', // Added quotes and better fallback
         color: "#F8D47E",
@@ -41,15 +41,29 @@ export class StartScene extends Phaser.Scene {
     });
 
     // === STORY TEXT ===
-    const story = [
-      "A terminal flickers alive:",
-      ">>> ERROR: SIGIL OF SYNTAX CORRUPTED",
-      ">>> SOLVE OR BE SEALED FOREVER",
-    ];
+     const story = `
 
-    const storyText = this.add
-      .text(width / 2, height * 0.45, "", {
-        fontSize: "26px",
+
+
+In the forgotten digital town of Byte Hollow, there lived once a developer unlike any other a genius, a madman, a sorcerer of syntax. His name was lost to time, but the legends remember him as The Codemancer.
+
+Obsessed with unlocking forbidden knowledge, he created a language made not of logic, but of chaos. He bound JavaScript to Python, wrapped recursion in hex, and opened ports to unknown realms. His final program the BugHex Protocol was so dangerous, so unstable, it began to consume the very world that ran it.
+
+To stop him, the greatest minds of the Old Code sealed him away in the Shadow Kernel, an exile from which no packet ever returned. But on Halloween night when the firewalls between realities grow thin his curse has reawakened.
+
+Now, systems everywhere are crashing. Time loops. Logic breaks. And Byte Hollow is being pulled back into his corrupted code.
+
+There is only one hope: you, the last of the Codebreakers a keeper of clean logic and defender of truth in syntax. You must venture through haunted systems, decode the Codemancer’s traps, and face him before midnight.
+
+If you fail, the world will be rewritten in his image.
+
+
+
+`;
+
+    this.add
+      .text(width / 2, height * 0.55, story, {
+        fontSize: "20px",
         fontFamily: "Courier Prime, monospace",
         color: "#E5E5E5",
         align: "center",
@@ -57,19 +71,6 @@ export class StartScene extends Phaser.Scene {
       })
       .setOrigin(0.5)
       .setDepth(3);
-
-    // === Typewriter Effect ===
-    let lineIndex = 0;
-    this.time.addEvent({
-      delay: 90,
-      loop: true,
-      callback: () => {
-        if (lineIndex < story.length) {
-          storyText.setText(story.slice(0, lineIndex + 1).join("\n"));
-          lineIndex++;
-        }
-      },
-    });
 
     // === CONTINUE PROMPT ===
     const continueText = this.add
@@ -97,7 +98,7 @@ export class StartScene extends Phaser.Scene {
     this.input.keyboard.on("keydown-ENTER", () => {
       this.cameras.main.fadeOut(800, 0, 0, 0);
       this.time.delayedCall(800, () => {
-        this.scene.start("IntroScene"); // change to your next scene key
+        this.scene.start("StartScene"); // change to your next scene key
       });
     });
 

@@ -3,21 +3,18 @@ import { IntroScene } from "./scenes/IntroScene";
 import { ForestScene } from "./scenes/ForestScene";
 import { StartScene } from "./scenes/StartScene";
 import { FinishScene } from "./scenes/FinishScene";
+import { Prologue } from "./scenes/Prologue";
 
 export class WitchingHourGame {
   private game: Phaser.Game | null = null;
-  private sceneOrder: string[] = [
-    "IntroScene",
-    "ForestScene",
-    "FinishScene",
-  ];
+  private sceneOrder: string[] = ["IntroScene", "ForestScene", "FinishScene"];
 
   constructor(containerId: string) {
     const config: Phaser.Types.Core.GameConfig = {
       type: Phaser.AUTO,
       parent: containerId,
       backgroundColor: "#1a1a2e",
-      scene: [StartScene, IntroScene, ForestScene, FinishScene],
+      scene: [Prologue, StartScene, IntroScene, ForestScene, FinishScene],
       physics: {
         default: "arcade",
         arcade: {
@@ -46,11 +43,20 @@ export class WitchingHourGame {
   }
 
   // Navigation helpers with time tracking
-  nextScene(currentSceneKey: string, timeLeft?: number, startTime?: number, completionTime?: number) {
+  nextScene(
+    currentSceneKey: string,
+    timeLeft?: number,
+    startTime?: number,
+    completionTime?: number
+  ) {
     const currentIndex = this.sceneOrder.indexOf(currentSceneKey);
     if (currentIndex >= 0 && currentIndex < this.sceneOrder.length - 1) {
       const nextSceneKey = this.sceneOrder[currentIndex + 1];
-      this.game?.scene.start(nextSceneKey, { timeLeft, startTime, completionTime });
+      this.game?.scene.start(nextSceneKey, {
+        timeLeft,
+        startTime,
+        completionTime,
+      });
     }
   }
 

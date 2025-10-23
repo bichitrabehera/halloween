@@ -31,8 +31,8 @@ export class IntroScene extends Phaser.Scene {
 
     this.add
       .text(width / 2, height * 0.2, story, {
-        fontSize: "32px",
-        fontFamily: "Henny Penny, Arial",
+        fontSize: "28px",
+        // fontFamily: "Henny Penny, Arial",
         color: "#FFD700",
         stroke: "#000000",
         strokeThickness: 3,
@@ -54,9 +54,9 @@ Every lock guards a fragment of the Sigil of Syntax — your only key forward.
 NOTE : AS SOON AS YOU CLICK ENTER A HIDDEN TIMER WILL START`;
 
     this.add
-      .text(width / 2, height * 0.5, story2, {
-        fontSize: "32px",
-        fontFamily: "Henny Penny, Arial",
+      .text(width / 2, height * 0.55, story2, {
+        fontSize: "24px",
+        // fontFamily: "Henny Penny, Arial",
         color: "#FFD700",
         stroke: "#000000",
         strokeThickness: 3,

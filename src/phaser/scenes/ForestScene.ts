@@ -32,20 +32,21 @@ export class ForestScene extends Phaser.Scene {
 
     // --- Story (Left) ---
     const story = `
-The fog thickens as you step into the cursed forest.
-Shadows twist between the trees, and faint whispers echo around you.
+With each puzzle you solve, the chamber shifts. Lights flicker.
+ Ghosts pause. And deep in the machine, something snarls:
+One by one, you solve the cursed queries. One by one,
+ the pieces of the Sigil recompile.
 
-A ghostly voice murmurs:
-"Decode the ancient Python spell hidden among the letters
-to reveal the sacred flower and lift the curse."
+At the final gate, a broken statue of an ancient developer speaks:
 
-Time is short — the shadows grow closer with every passing moment.
+👻 “If your logic is pure… your recursion true… then go. But beware…”
+👻 “…he’s begun rewriting the runtime.”
 `;
     this.add
       .text(width * 0.25, height * 0.45, story, {
-        fontSize: "22px",
+        fontSize: "20px",
         color: "#ffffff",
-        fontFamily: "Poppins, Arial",
+        fontFamily: "Arial",
         align: "center",
         wordWrap: { width: width * 0.35 },
         lineSpacing: 4,
@@ -57,7 +58,7 @@ Time is short — the shadows grow closer with every passing moment.
     // --- Input Box ---
     this.inputElement = document.createElement("input");
     this.inputElement.type = "text";
-    this.inputElement.placeholder = "Enter flower name...";
+    this.inputElement.placeholder = "Enter your answer";
     this.inputElement.style.position = "absolute";
     this.inputElement.style.top = `${height * 0.75}px`;
     this.inputElement.style.left = `${width * 0.25 - 150}px`;
