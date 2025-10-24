@@ -1,62 +1,44 @@
 import Phaser from "phaser";
-import bgImage from "../../assets/bg1.jpg";
-// GameOverScene.js
 
-class GameOverScene extends Phaser.Scene {
+export default class GameOverScene extends Phaser.Scene {
   constructor() {
     super({ key: "GameOver" });
   }
 
-  preload() {
-    this.load.image("gameoverBg", bgImage);
+  preload(): void {
+    this.load.image("gameoverBg", "assets/bg.png");
   }
 
-  create() {
-    const { width, height } = this.scale;
+  create(): void {
+    // Mark Game Over in localStorage
+    localStorage.setItem("gameOver", "true");
 
     // Background
-    const bg = this.add
-      .image(0, 0, "gameoverBg")
-      .setOrigin(0)
-      .setDisplaySize(width, height)
-      .setTint(0x555555);
+    const bg = this.add.image(0, 0, "gameoverBg").setOrigin(0);
+    bg.setDisplaySize(this.scale.width, this.scale.height);
 
     // Game Over text
     this.add
-      .text(this.cameras.main.centerX, this.cameras.main.centerY, "GAME OVER", {
-        fontFamily: "'Press Start 2P', cursive",
+      .text(this.scale.width / 2, this.scale.height / 2, "GAME OVER", {
+        fontFamily: "Arial",
         fontSize: "64px",
         color: "#ff0000",
         fontStyle: "bold",
       })
       .setOrigin(0.5);
 
-    // Disable all input
-    this.input.keyboard.enabled = false;
-    this.input.mouse.enabled = false;
-    this.input.touch.enabled = false;
+    // Disable all input (TypeScript-safe)
+    const input = this.input;
+    if (input && input.keyboard) input.keyboard.enabled = false;
+    if (input && input.mouse) input.mouse.enabled = false;
+    // Phaser.InputPlugin doesn’t expose `.touch` in types, so cast to any:
+    (input as any).touch = null;
 
-    window.onbeforeunload = function (event) {
-      event.preventDefault();
-      event.returnValue = "You cannot reload this page after Game Over.";
-      return "You cannot reload this page after Game Over.";
+    // Warn if reload attempted
+    window.onbeforeunload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "You cannot reload this page after Game Over.";
+      return e.returnValue;
     };
-
-    // Disable some keys that trigger reload
-    window.addEventListener("keydown", function (e) {
-      // Block F5
-      if (e.key === "F5") {
-        e.preventDefault();
-        alert("Reload is disabled after Game Over.");
-      }
-
-      // Block Ctrl+R or Cmd+R
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "r") {
-        e.preventDefault();
-        alert("Reload is disabled after Game Over.");
-      }
-    });
   }
 }
-
-export default GameOverScene;

@@ -64,7 +64,7 @@ export class IntroScene extends Phaser.Scene {
     };
 
     // === Go to next scene when ENTER pressed ===
-    this.input.keyboard.once("keydown-ENTER", startTransition);
+    this.input.keyboard?.once("keydown-ENTER", startTransition);
 
     // === Click to continue ===
     continueText.once("pointerup", startTransition);
