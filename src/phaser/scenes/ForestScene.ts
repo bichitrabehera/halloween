@@ -128,7 +128,7 @@ At the final gate, a broken statue of an ancient developer speaks:
         this.inputElement.disabled = true;
         this.time.delayedCall(2000, () => {
           this.inputElement.remove();
-          this.scene.start("StartScene");
+          this.scene.start("GameOver");
         });
       }
     }

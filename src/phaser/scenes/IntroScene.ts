@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import forestBg from "../../assets/forest_bg.png";
+import story2 from "../../assets/img2.png";
 
 export class IntroScene extends Phaser.Scene {
   constructor() {
@@ -8,6 +9,7 @@ export class IntroScene extends Phaser.Scene {
 
   preload() {
     this.load.image("bg_forest", forestBg);
+    this.load.image("story_2", story2);
   }
 
   create() {
@@ -18,54 +20,13 @@ export class IntroScene extends Phaser.Scene {
       .image(width / 2, height / 2, "bg_forest")
       .setDisplaySize(width, height)
       .setDepth(0)
-      .setTint(0x222222); // dark overlay for haunted effect
-
-    // Optional: add subtle fog or particle effects here
-
-    // --- Story Text ---
-    const story = `
-“I tried to fix the infinite loop… but it fixed me…”
-“We deprecated logic… now chaos runs the build…”
-
-    `;
+      .setTint(0x555555);
 
     this.add
-      .text(width / 2, height * 0.2, story, {
-        fontSize: "28px",
-        // fontFamily: "Henny Penny, Arial",
-        color: "#FFD700",
-        stroke: "#000000",
-        strokeThickness: 3,
-        align: "center",
-        wordWrap: { width: width * 0.75 },
-        lineSpacing: 10,
-        letterSpacing: 2,
-      })
-      .setOrigin(0.5);
-
-    const story2 = `
-You stand before the ancient terminal.
-Symbols pulse across the screen — half-code, half-curse.
-
-This is the Crypt of Riddles.
-Every riddle is a lock.
-Every lock guards a fragment of the Sigil of Syntax — your only key forward.
-
-NOTE : AS SOON AS YOU CLICK ENTER A HIDDEN TIMER WILL START`;
-
-    this.add
-      .text(width / 2, height * 0.55, story2, {
-        fontSize: "24px",
-        // fontFamily: "Henny Penny, Arial",
-        color: "#FFD700",
-        stroke: "#000000",
-        strokeThickness: 3,
-        align: "center",
-        wordWrap: { width: width * 0.75 },
-        lineSpacing: 10,
-        letterSpacing: 2,
-      })
-      .setOrigin(0.5);
+      .image(width / 2, height * 0.55, "story_2")
+      .setScale(0.6)
+      .setOrigin(0.5)
+      .setDepth(3);
 
     // === CONTINUE PROMPT ===
     const continueText = this.add
@@ -80,14 +41,12 @@ NOTE : AS SOON AS YOU CLICK ENTER A HIDDEN TIMER WILL START`;
       .setInteractive({ useHandCursor: true }); // Make it interactive for clicks
 
     // Fade in the continue prompt after story finishes
-    this.time.delayedCall(story.length * 100 + 1000, () => {
-      this.tweens.add({
-        targets: continueText,
-        alpha: 1,
-        duration: 800,
-        yoyo: true,
-        repeat: -1,
-      });
+    this.tweens.add({
+      targets: continueText,
+      alpha: 1,
+      duration: 800,
+      yoyo: true,
+      repeat: -1,
     });
 
     // Track if transition has started to prevent double-triggering
@@ -112,6 +71,5 @@ NOTE : AS SOON AS YOU CLICK ENTER A HIDDEN TIMER WILL START`;
 
     // === FADE IN CAMERA ===
     this.cameras.main.fadeIn(1000, 0, 0, 0);
-
   }
 }

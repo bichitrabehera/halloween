@@ -4,6 +4,7 @@ import { ForestScene } from "./scenes/ForestScene";
 import { StartScene } from "./scenes/StartScene";
 import { FinishScene } from "./scenes/FinishScene";
 import { Prologue } from "./scenes/Prologue";
+import GameOverScene from "./scenes/GameOver"
 
 export class WitchingHourGame {
   private game: Phaser.Game | null = null;
@@ -14,7 +15,7 @@ export class WitchingHourGame {
       type: Phaser.AUTO,
       parent: containerId,
       backgroundColor: "#1a1a2e",
-      scene: [Prologue, StartScene, IntroScene, ForestScene, FinishScene],
+      scene: [Prologue, StartScene, IntroScene, ForestScene, FinishScene, GameOverScene],
       physics: {
         default: "arcade",
         arcade: {
