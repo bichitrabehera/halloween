@@ -6,6 +6,7 @@ export class ForestScene extends Phaser.Scene {
   private inputElement!: HTMLInputElement;
   private feedbackText!: Phaser.GameObjects.Text;
   private hintText!: Phaser.GameObjects.Text;
+  private chancesText!: Phaser.GameObjects.Text;
   private attemptsLeft = 3;
   private startTime: number = 0;
 
@@ -28,7 +29,6 @@ export class ForestScene extends Phaser.Scene {
       .setDisplaySize(width, height)
       .setDepth(0)
       .setTint(0x222222);
-
 
     // --- Story (Left) ---
     const story = `
@@ -53,14 +53,17 @@ At the final gate, a broken statue of an ancient developer speaks:
       })
       .setOrigin(0.5);
 
-    this.add.image(width * 0.75, height * 0.48, "code").setScale(0.5).setOrigin(0.5);
+    this.add
+      .image(width * 0.75, height * 0.48, "code")
+      .setScale(0.5)
+      .setOrigin(0.5);
 
     // --- Input Box ---
     this.inputElement = document.createElement("input");
     this.inputElement.type = "text";
     this.inputElement.placeholder = "Enter your answer";
     this.inputElement.style.position = "absolute";
-    this.inputElement.style.top = `${height * 0.75}px`;
+    this.inputElement.style.top = `${height * 0.65}px`;
     this.inputElement.style.left = `${width * 0.25 - 150}px`;
     this.inputElement.style.width = "300px";
     this.inputElement.style.fontSize = "20px";
@@ -71,6 +74,15 @@ At the final gate, a broken statue of an ancient developer speaks:
     this.inputElement.style.borderRight = "3px solid #ffcc00";
     this.inputElement.style.backgroundColor = "rgba(255, 255, 255, 0.9)";
     document.body.appendChild(this.inputElement);
+
+    // --- Chances Text (Top-Right) ---
+    this.chancesText = this.add
+      .text(width - 30, 30, `Chances Left: ${this.attemptsLeft}`, {
+        fontSize: "24px",
+        color: "#ffcc00",
+        fontFamily: "Poppins, Arial",
+      })
+      .setOrigin(1, 0); // top-right alignment
 
     // --- Feedback Text ---
     this.feedbackText = this.add
@@ -110,6 +122,7 @@ At the final gate, a broken statue of an ancient developer speaks:
       });
     } else {
       this.attemptsLeft--;
+      this.updateChancesDisplay();
 
       if (this.attemptsLeft === 1) {
         this.hintText.setText(
@@ -132,6 +145,11 @@ At the final gate, a broken statue of an ancient developer speaks:
         });
       }
     }
+  }
+
+  private updateChancesDisplay() {
+    this.chancesText.setText(`Chances Left: ${this.attemptsLeft}`);
+    this.chancesText.setColor(this.attemptsLeft <= 1 ? "#ff4444" : "#ffcc00");
   }
 
   shutdown() {
