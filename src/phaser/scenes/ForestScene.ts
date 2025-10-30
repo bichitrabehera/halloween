@@ -60,7 +60,8 @@ What number echoes from the void?`,
   },
   {
     id: 10,
-    question: `If a clock is set right at 6 AM, in how many minutes will it gain 12 minutes?`,
+    question: `A clock gains 1 minute every hour.
+If the clock is set correctly at 6:00 AM, at what real time will it show 12 minutes ahead of the correct time?(in minutes)`,
     answer: "720",
   },
 ];
