@@ -66,12 +66,16 @@ What number echoes from the void?`,
 ];
 
 export class ForestScene extends Phaser.Scene {
-  private userAnswers: { [key: number]: string } = {};
-  private score: number | null = null;
+  private currentQuestionIndex: number = 0;
+  private score: number = 0;
   private startTime: number = 0;
-  private inputs: HTMLInputElement[] = [];
+  private inputElement!: HTMLInputElement;
   private submitButton: Phaser.GameObjects.Text | null = null;
-  private scoreText: Phaser.GameObjects.Text | null = null;
+  private questionText: Phaser.GameObjects.Text | null = null;
+  private feedbackText: Phaser.GameObjects.Text | null = null;
+  private hintText: Phaser.GameObjects.Text | null = null;
+  private chancesText: Phaser.GameObjects.Text | null = null;
+  private attemptsLeft: number = 3;
 
   constructor() {
     super({ key: "ForestScene" });
@@ -95,54 +99,75 @@ export class ForestScene extends Phaser.Scene {
       .setDepth(0)
       .setTint(0x222222);
 
-    // Title
-    this.add
-      .text(width / 2, 50, "Company Aptitude Quiz", {
-        fontSize: "32px",
-        color: "#FFD700",
-        stroke: "#000000",
-        strokeThickness: 3,
+    // Chances Text (Top-Right)
+    this.chancesText = this.add
+      .text(width - 30, 30, `Chances Left: ${this.attemptsLeft}`, {
+        fontSize: "24px",
+        color: "#ffcc00",
+        fontFamily: "Poppins, Arial",
+      })
+      .setOrigin(1, 0);
+
+    // Display current question
+    this.displayCurrentQuestion();
+
+    // Feedback Text
+    this.feedbackText = this.add
+      .text(width / 2, height * 0.7, "", {
+        fontSize: "24px",
+        color: "#ffffff",
+        fontFamily: "Henny Penny, Arial",
+        align: "center",
       })
       .setOrigin(0.5);
 
-    // Display questions and create inputs
-    let yOffset = 100;
-    questions.forEach((q) => {
-      // Question text
-      this.add
-        .text(50, yOffset, `Q${q.id}: ${q.question}`, {
-          fontSize: "18px",
-          color: "#FFFFFF",
-          wordWrap: { width: width - 100 },
-        })
-        .setOrigin(0, 0);
+    // Hint Text
+    this.hintText = this.add
+      .text(width / 2, height * 0.8, "", {
+        fontSize: "20px",
+        color: "#aaaaff",
+        fontFamily: "Poppins, Arial",
+        align: "center",
+      })
+      .setOrigin(0.5);
 
-      yOffset += 120; // Adjust based on question length
+    // Enter Key
+    this.input.keyboard?.on("keydown-ENTER", () => this.handleSubmit());
+  }
 
-      // Create DOM input for answer
-      const input = document.createElement("input");
-      input.type = "text";
-      input.style.position = "absolute";
-      input.style.left = "50px";
-      input.style.top = `${yOffset}px`;
-      input.style.width = "400px";
-      input.style.padding = "8px";
-      input.style.fontSize = "16px";
-      input.style.zIndex = "1000";
-      document.body.appendChild(input);
-      this.inputs.push(input);
+  displayCurrentQuestion() {
+    const { width, height } = this.scale;
+    const q = questions[this.currentQuestionIndex];
 
-      // Handle input change
-      input.addEventListener("input", (e) => {
-        this.userAnswers[q.id] = (e.target as HTMLInputElement).value;
-      });
+    // Question text
+    this.questionText = this.add
+      .text(50, 100, `Q${q.id}: ${q.question}`, {
+        fontSize: "18px",
+        color: "#FFFFFF",
+        wordWrap: { width: width - 100 },
+      })
+      .setOrigin(0, 0);
 
-      yOffset += 50;
-    });
+    // Create DOM input for answer
+    this.inputElement = document.createElement("input");
+    this.inputElement.type = "text";
+    this.inputElement.placeholder = "Enter your answer";
+    this.inputElement.style.position = "absolute";
+    this.inputElement.style.left = "50px";
+    this.inputElement.style.top = `${height * 0.5}px`;
+    this.inputElement.style.width = "400px";
+    this.inputElement.style.padding = "8px";
+    this.inputElement.style.fontSize = "16px";
+    this.inputElement.style.zIndex = "1000";
+    this.inputElement.style.border = "none";
+    this.inputElement.style.borderBottom = "3px solid #ffcc00";
+    this.inputElement.style.borderRight = "3px solid #ffcc00";
+    this.inputElement.style.backgroundColor = "rgba(255, 255, 255, 0.9)";
+    document.body.appendChild(this.inputElement);
 
     // Submit button
     this.submitButton = this.add
-      .text(width / 2, yOffset + 50, "Submit", {
+      .text(width / 2, height * 0.6, "Submit", {
         fontSize: "24px",
         color: "#FFD700",
         backgroundColor: "#333333",
@@ -151,59 +176,79 @@ export class ForestScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true })
       .on("pointerdown", () => this.handleSubmit());
-
-    // Score display (initially hidden)
-    this.scoreText = this.add
-      .text(width / 2, yOffset + 120, "", {
-        fontSize: "24px",
-        color: "#FFD700",
-      })
-      .setOrigin(0.5);
   }
 
   handleSubmit() {
-    let tempScore = 0;
-    questions.forEach((q) => {
-      if (
-        this.userAnswers[q.id]?.trim().toLowerCase() === q.answer.toLowerCase()
-      ) {
-        tempScore += 1;
+    const answer = this.inputElement.value.trim().toLowerCase();
+    const correctAnswer =
+      questions[this.currentQuestionIndex].answer.toLowerCase();
+
+    if (answer === correctAnswer) {
+      this.score += 1;
+      this.feedbackText?.setText("Correct! Well done.");
+      this.feedbackText?.setColor("#00ff00");
+      this.currentQuestionIndex += 1;
+
+      // Remove current elements
+      this.questionText?.destroy();
+      this.inputElement.remove();
+      this.submitButton?.destroy();
+
+      if (this.currentQuestionIndex < questions.length) {
+        this.time.delayedCall(1000, () => {
+          this.feedbackText?.setText("");
+          this.displayCurrentQuestion();
+        });
+      } else {
+        // Quiz completed
+        const endTime = Date.now();
+        const timeTaken = (endTime - this.startTime) / 1000;
+        console.log(
+          `Quiz completed in ${timeTaken} seconds with score ${this.score}`
+        );
+        this.time.delayedCall(1000, () => {
+          this.scene.start("FinishScene", {
+            startTime: this.startTime,
+            score: this.score,
+          });
+        });
       }
-    });
-    this.score = tempScore;
+    } else {
+      this.attemptsLeft -= 1;
+      this.updateChancesDisplay();
 
-    // Display score
-    if (this.scoreText) {
-      this.scoreText.setText(`Your score: ${this.score} / ${questions.length}`);
+      if (this.attemptsLeft === 1) {
+        this.hintText?.setText("Hint: Think carefully about the calculation.");
+      }
+
+      if (this.attemptsLeft > 0) {
+        this.feedbackText?.setText(
+          `Wrong! Try again. (${this.attemptsLeft} tries left)`
+        );
+        this.feedbackText?.setColor("#ff4444");
+      } else {
+        this.feedbackText?.setText("Game Over! The forest consumes you...");
+        this.feedbackText?.setColor("#ff0000");
+        this.inputElement.disabled = true;
+        this.submitButton?.disableInteractive();
+        this.time.delayedCall(2000, () => {
+          this.inputElement.remove();
+          this.scene.start("GameOver");
+        });
+      }
     }
+  }
 
-    // Remove inputs after submission
-    this.inputs.forEach((input) => {
-      document.body.removeChild(input);
-    });
-    this.inputs = [];
-
-    // Disable submit button
-    if (this.submitButton) {
-      this.submitButton.disableInteractive();
-      this.submitButton.setColor("#666666");
-    }
-
-    // Calculate time taken
-    const endTime = Date.now();
-    const timeTaken = (endTime - this.startTime) / 1000; // in seconds
-    console.log(`Quiz completed in ${timeTaken} seconds`);
-
-    // TODO: Transition to next scene based on score or time
+  updateChancesDisplay() {
+    this.chancesText?.setText(`Chances Left: ${this.attemptsLeft}`);
+    this.chancesText?.setColor(this.attemptsLeft <= 1 ? "#ff4444" : "#ffcc00");
   }
 
   // Clean up DOM elements when scene is destroyed
   // Phaser scenes don't have a destroy method, but we can override shutdown
   shutdown() {
-    this.inputs.forEach((input) => {
-      if (document.body.contains(input)) {
-        document.body.removeChild(input);
-      }
-    });
+    if (this.inputElement && document.body.contains(this.inputElement)) {
+      document.body.removeChild(this.inputElement);
+    }
   }
 }
