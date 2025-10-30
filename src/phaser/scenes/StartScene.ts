@@ -94,7 +94,7 @@ export class StartScene extends Phaser.Scene {
     });
 
     // === Go to next scene when ENTER pressed ===
-    this.input.keyboard.on("keydown-ENTER", () => {
+    this.input.keyboard?.on("keydown-ENTER", () => {
       this.cameras.main.fadeOut(800, 0, 0, 0);
       this.time.delayedCall(800, () => {
         this.scene.start("IntroScene"); // change to your next scene key
