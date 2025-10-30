@@ -41,7 +41,7 @@ export class Prologue extends Phaser.Scene {
     });
 
     // === STORY TEXT ===
-     const story = `
+    const story = `
 
 
 
@@ -95,12 +95,14 @@ If you fail, the world will be rewritten in his image.
     });
 
     // === Go to next scene when ENTER pressed ===
-    this.input.keyboard.on("keydown-ENTER", () => {
-      this.cameras.main.fadeOut(800, 0, 0, 0);
-      this.time.delayedCall(800, () => {
-        this.scene.start("StartScene"); // change to your next scene key
+    if (this.input.keyboard) {
+      this.input.keyboard.on("keydown-ENTER", () => {
+        this.cameras.main.fadeOut(800, 0, 0, 0);
+        this.time.delayedCall(800, () => {
+          this.scene.start("StartScene"); // change to your next scene key
+        });
       });
-    });
+    }
 
     // === FADE IN CAMERA ===
     this.cameras.main.fadeIn(1000, 0, 0, 0);

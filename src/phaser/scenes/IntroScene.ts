@@ -105,13 +105,12 @@ NOTE : AS SOON AS YOU CLICK ENTER A HIDDEN TIMER WILL START`;
     };
 
     // === Go to next scene when ENTER pressed ===
-    this.input.keyboard.once("keydown-ENTER", startTransition);
+    this.input?.keyboard?.once("keydown-ENTER", startTransition);
 
     // === Click to continue ===
     continueText.once("pointerup", startTransition);
 
     // === FADE IN CAMERA ===
     this.cameras.main.fadeIn(1000, 0, 0, 0);
-
   }
 }
