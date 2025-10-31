@@ -10,42 +10,52 @@ interface Question {
 const questions: Question[] = [
   {
     id: 1,
-    question: `Python Coding:
-x = 2
-for i in range(5):
+    question: `
+    Python Coding:
+  x = 2
+  for i in range(5):
     x *= 2
-print(x)
-What number echoes from the void?`,
+  print(x)
+  What number echoes from the void?`,
     answer: "64",
   },
   {
     id: 2,
-    question: `If the cost of 5 pens and 3 pencils is $21, and the cost of 2 pens and 1 pencil is $7, what is the cost of 1 pen?`,
+    question: `If the cost of 5 pens and 3 pencils is $21,
+    and the cost of 2 pens and 1 pencil is $7,
+    what is the cost of 1 pen?`,
     answer: "2",
   },
   {
     id: 3,
-    question: `A train 120m long is running at a speed of 60 km/h. In how many seconds will it pass a man standing on the platform?`,
+    question: `A train 120m long is running at a speed of 60 km/h.
+    In how many seconds will it pass a man standing on the platform?`,
     answer: "7.2",
   },
   {
     id: 4,
-    question: `If 3 typists can type 3 pages in 3 minutes, how many typists will it take to type 18 pages in 6 minutes?`,
+    question: `If 3 typists can type 3 pages in 3 minutes, how many
+    typists will it take to type 18 pages in 6 minutes?`,
     answer: "6",
   },
   {
     id: 5,
-    question: `A bag contains 6 red, 4 blue, and 5 green balls. What is the minimum number of balls you need to pick to be sure of getting at least 2 balls of the same color?`,
+    question: `A bag contains 6 red, 4 blue, and 5 green balls.
+    What is the minimum number of balls you need to pick to be
+    sure of getting at least 2 balls of the same color?`,
     answer: "4",
   },
   {
     id: 6,
-    question: `In a class of 60 students, 30 study English, 25 study Maths, and 10 study both. How many students study neither?`,
+    question: `In a class of 60 students, 30 study English, 25
+    study Maths, and 10 study both. How many students study neither?`,
     answer: "15",
   },
   {
     id: 7,
-    question: `A man buys an article for $240 and sells it at a 20% profit. He then sells another article for $180 at 10% loss. What is his overall profit or loss?`,
+    question: `A man buys an article for $240 and sells it at a
+    20% profit. He then sells another article for $180 at 10% loss.
+     What is his overall profit or loss?`,
     answer: "20",
   },
   {
@@ -55,13 +65,15 @@ What number echoes from the void?`,
   },
   {
     id: 9,
-    question: `A cube has side length 4 cm. How many smaller cubes of side 1 cm can be formed from it?`,
+    question: `A cube has side length 4 cm. How many smaller
+    cubes of side 1 cm can be formed from it?`,
     answer: "64",
   },
   {
     id: 10,
     question: `A clock gains 1 minute every hour.
-If the clock is set correctly at 6:00 AM, at what real time will it show 12 minutes ahead of the correct time?(in minutes)`,
+    If the clock is set correctly at 6:00 AM, at what real time
+    will it show 12 minutes ahead of the correct time?(in minutes)`,
     answer: "720",
   },
 ];
@@ -76,7 +88,7 @@ export class ForestScene extends Phaser.Scene {
   private feedbackText: Phaser.GameObjects.Text | null = null;
   private hintText: Phaser.GameObjects.Text | null = null;
   private chancesText: Phaser.GameObjects.Text | null = null;
-  private attemptsLeft: number = 3;
+  private attemptsLeft: number = 5;
 
   constructor() {
     super({ key: "ForestScene" });
@@ -136,55 +148,55 @@ export class ForestScene extends Phaser.Scene {
     this.input.keyboard?.on("keydown-ENTER", () => this.handleSubmit());
   }
 
-  displayCurrentQuestion() {
-    const { width, height } = this.scale;
-    const q = questions[this.currentQuestionIndex];
+ displayCurrentQuestion() {
+  const { width, height } = this.scale;
+  const q = questions[this.currentQuestionIndex];
 
-    // Remove any leftover DOM elements (in case of re-entry)
-    const existingInput = document.querySelector("input");
-    if (existingInput) existingInput.remove();
+  // Remove any leftover DOM elements (in case of re-entry)
+  const existingInput = document.querySelector("input");
+  if (existingInput) existingInput.remove();
 
-    // Question text (centered and wrapped)
-    this.questionText = this.add
-      .text(width / 2, height * 0.25, `Q${q.id}: ${q.question}`, {
-        fontSize: "20px",
-        color: "#FFFFFF",
-        fontFamily: "Poppins, Arial",
-        align: "center",
-        wordWrap: { width: width * 0.8 },
-      })
-      .setOrigin(0.5, 0); // Center horizontally
+  // Question text (centered and wrapped)
+  this.questionText = this.add
+    .text(width / 2, height * 0.25, `Q${q.id}: ${q.question}`, {
+      fontSize: "20px",
+      color: "#FFFFFF",
+      fontFamily: "Poppins, Arial",
+      align: "center",
+      wordWrap: { width: width * 0.8 },
+    })
+    .setOrigin(0.5, 0); // Center horizontally
 
-    // Create DOM input for answer (centered)
-    this.inputElement = document.createElement("input");
-    this.inputElement.type = "text";
-    this.inputElement.placeholder = "Enter your answer";
-    this.inputElement.style.position = "absolute";
-    this.inputElement.style.left = `${width / 2 - 200}px`;
-    this.inputElement.style.top = `${height * 0.5}px`;
-    this.inputElement.style.width = "400px";
-    this.inputElement.style.padding = "10px";
-    this.inputElement.style.fontSize = "18px";
-    this.inputElement.style.textAlign = "center";
-    this.inputElement.style.zIndex = "1000";
-    this.inputElement.style.border = "2px solid #ffcc00";
-    this.inputElement.style.borderRadius = "8px";
-    this.inputElement.style.backgroundColor = "rgba(255, 255, 255, 0.9)";
-    document.body.appendChild(this.inputElement);
+  // Create DOM input for answer (centered)
+  this.inputElement = document.createElement("input");
+  this.inputElement.type = "text";
+  this.inputElement.placeholder = "Enter your answer";
+  this.inputElement.style.position = "absolute";
+  this.inputElement.style.left = `${width / 2 - 200}px`;
+  this.inputElement.style.top = `${height * 0.5}px`;
+  this.inputElement.style.width = "400px";
+  this.inputElement.style.padding = "10px";
+  this.inputElement.style.fontSize = "18px";
+  this.inputElement.style.textAlign = "center";
+  this.inputElement.style.zIndex = "1000";
+  this.inputElement.style.border = "2px solid #ffcc00";
+  this.inputElement.style.borderRadius = "8px";
+  this.inputElement.style.backgroundColor = "rgba(255, 255, 255, 0.9)";
+  document.body.appendChild(this.inputElement);
 
-    // Submit button (centered)
-    this.submitButton = this.add
-      .text(width / 2, height * 0.6, "Submit", {
-        fontSize: "24px",
-        color: "#FFD700",
-        backgroundColor: "#333333",
-        padding: { x: 25, y: 12 },
-        fontFamily: "Poppins, Arial",
-      })
-      .setOrigin(0.5)
-      .setInteractive({ useHandCursor: true })
-      .on("pointerdown", () => this.handleSubmit());
-  }
+  // Submit button (centered)
+  this.submitButton = this.add
+    .text(width / 2, height * 0.6, "Submit", {
+      fontSize: "24px",
+      color: "#FFD700",
+      backgroundColor: "#333333",
+      padding: { x: 25, y: 12 },
+      fontFamily: "Poppins, Arial",
+    })
+    .setOrigin(0.5)
+    .setInteractive({ useHandCursor: true })
+    .on("pointerdown", () => this.handleSubmit());
+}
 
   handleSubmit() {
     const answer = this.inputElement.value.trim().toLowerCase();

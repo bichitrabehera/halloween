@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import firstBg from "../../assets/example.png";
+import forestBg from "../../assets/example.png";
 import prologueImg from "../../assets/prologue_image.png";
 
 export class Prologue extends Phaser.Scene {
@@ -8,8 +8,8 @@ export class Prologue extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image("bg_first", firstBg);
-    this.load.image("prologue_image", prologueImg);
+    this.load.image("bg_forest1", forestBg);
+    this.load.image("prologue_art", prologueImg);
   }
 
   create() {
@@ -17,37 +17,26 @@ export class Prologue extends Phaser.Scene {
 
     // === BACKGROUND ===
     this.add
-      .image(width / 2, height / 2, "bg_first")
+      .image(width / 2, height / 2, "bg_forest1")
       .setDisplaySize(width, height)
-      // .setTint(0x555555);
+      .setTint(0x555555)
+      .setDepth(0);
 
-    // === ROUND TITLE ===
-    const roundTitle = this.add
-      .text(width / 2, height * 0.1, "Prologue: Echoes from the Kernel", {
-        fontSize: "30px",
-        fontFamily: '"Press Start 2P", monospace', // Added quotes and better fallback
-        color: "#F8D47E",
-        stroke: "#000000",
-        strokeThickness: 4,
-        align: "center",
-      })
+    // === PROLOGUE IMAGE ===
+    const prologueImage = this.add
+      .image(width / 2, height / 2, "prologue_art")
       .setOrigin(0.5)
-      .setDepth(3)
-      .setAlpha(0);
+      .setDisplaySize(width * 0.7, height * 0.7)
+      .setDepth(1)
+      .setAlpha(0); // start transparent
 
+    // Fade-in animation for the image
     this.tweens.add({
-      targets: roundTitle,
+      targets: prologueImage,
       alpha: 1,
-      duration: 1000,
+      duration: 1500,
       ease: "Power2",
     });
-
-    this.add
-      .image(width / 2, height * 0.55, "prologue_image")
-      .setScale(0.5)
-      .setOrigin(0.5)
-      .setDepth(3);
-
 
     // === CONTINUE PROMPT ===
     const continueText = this.add
@@ -58,26 +47,37 @@ export class Prologue extends Phaser.Scene {
       })
       .setOrigin(0.5)
       .setAlpha(0)
-      .setDepth(4);
+      .setDepth(2);
 
-    // Fade in the continue prompt after story finishes
-      this.tweens.add({
-        targets: continueText,
-        alpha: 1,
-        duration: 800,
-        yoyo: true,
-        repeat: -1,
-      });
-
-    // === Go to next scene when ENTER pressed ===
-    this.input.keyboard?.on("keydown-ENTER", () => {
-      this.cameras.main.fadeOut(800, 0, 0, 0);
-      this.time.delayedCall(800, () => {
-        this.scene.start("StartScene"); // change to your next scene key
-      });
+    // Fade-in looping animation
+    this.tweens.add({
+      targets: continueText,
+      alpha: 1,
+      duration: 800,
+      yoyo: true,
+      repeat: -1,
+      delay: 1500, // appears after image fades in
     });
 
     // === FADE IN CAMERA ===
     this.cameras.main.fadeIn(1000, 0, 0, 0);
+
+    // === SCENE TRANSITION HANDLER ===
+    let isTransitioning = false;
+    const startTransition = () => {
+      if (isTransitioning) return;
+      isTransitioning = true;
+
+      this.cameras.main.fadeOut(700, 0, 0, 0);
+      this.time.delayedCall(700, () => {
+        this.scene.start("StartScene"); // Change to your next scene
+      });
+    };
+
+    // ENTER key or click to continue
+    this.input?.keyboard?.once("keydown-ENTER", startTransition);
+    continueText
+      .setInteractive({ useHandCursor: true })
+      .once("pointerup", startTransition);
   }
 }

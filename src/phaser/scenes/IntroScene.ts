@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import forestBg from "../../assets/forest_bg.png";
-import story2 from "../../assets/img2.png";
+import img2 from "../../assets/img2.png";
 
 export class IntroScene extends Phaser.Scene {
   constructor() {
@@ -9,7 +9,7 @@ export class IntroScene extends Phaser.Scene {
 
   preload() {
     this.load.image("bg_forest", forestBg);
-    this.load.image("story_2", story2);
+    this.load.image("story", img2);
   }
 
   create() {
@@ -20,13 +20,12 @@ export class IntroScene extends Phaser.Scene {
       .image(width / 2, height / 2, "bg_forest")
       .setDisplaySize(width, height)
       .setDepth(0)
-      .setTint(0x555555);
+      .setTint(0x222222); // dark overlay for haunted effect
 
     this.add
-      .image(width / 2, height * 0.55, "story_2")
-      .setScale(0.6)
-      .setOrigin(0.5)
-      .setDepth(3);
+      .image(width / 2, height / 2, "story")
+      .setDisplaySize(width, height)
+      .setDepth(0).setScale(0.5)
 
     // === CONTINUE PROMPT ===
     const continueText = this.add
@@ -64,7 +63,7 @@ export class IntroScene extends Phaser.Scene {
     };
 
     // === Go to next scene when ENTER pressed ===
-    this.input.keyboard?.once("keydown-ENTER", startTransition);
+    this.input?.keyboard?.once("keydown-ENTER", startTransition);
 
     // === Click to continue ===
     continueText.once("pointerup", startTransition);
